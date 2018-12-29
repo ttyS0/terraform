@@ -29,3 +29,8 @@ resource "aws_route53_record" "ttys0_home" {
   ttl     = "${var.ttl_1d}"
   records = ["${var.home_ip}"]
 }
+
+## outputs
+output "zones" {
+  value = "${zipmap(aws_route53_zone.public_zone.*.name, aws_route53_zone.public_zone.*.zone_id)}"
+}
