@@ -32,5 +32,5 @@ resource "aws_route53_record" "ttys0_home" {
 
 ## outputs
 output "zones" {
-  value = "${zipmap(aws_route53_zone.public_zone.*.name, aws_route53_zone.public_zone.*.zone_id)}"
+  value = "${zipmap(var.public_zones, aws_route53_zone.public_zone.*.zone_id)}"
 }
