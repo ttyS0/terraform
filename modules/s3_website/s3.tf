@@ -1,9 +1,10 @@
 resource "aws_s3_bucket" "website" {
   bucket = "${var.root_domain}"
-  acl    = "private"
+  acl    = "public-read"
 
   website {
     index_document = "index.html"
+    error_document = "404.html"
   }
 
   logging {
@@ -19,22 +20,13 @@ resource "aws_s3_bucket_policy" "website" {
 
 data "aws_iam_policy_document" "website" {
   "statement" {
+    sid       = "PublicReadGetObject"
     actions   = ["s3:GetObject"]
     resources = ["arn:aws:s3:::${var.root_domain}/*"]
 
     principals {
       type        = "AWS"
-      identifiers = ["${aws_cloudfront_origin_access_identity.website.iam_arn}"]
-    }
-  }
-
-  statement {
-    actions   = ["s3:ListBucket"]
-    resources = ["arn:aws:s3:::${var.root_domain}"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["${aws_cloudfront_origin_access_identity.website.iam_arn}"]
+      identifiers = ["*"]
     }
   }
 }

@@ -1,7 +1,3 @@
-resource "aws_cloudfront_origin_access_identity" "website" {
-  comment = "${var.root_domain} via Terraform"
-}
-
 resource "aws_route53_record" "website" {
   name    = "${var.root_domain}"
   type    = "A"
@@ -23,17 +19,19 @@ resource "aws_route53_record" "www-website" {
 }
 
 resource "aws_cloudfront_distribution" "website" {
-  enabled             = true
-  comment             = "${var.root_domain} website"
-  default_root_object = "index.html"
-  price_class         = "PriceClass_100"
+  enabled     = true
+  comment     = "${var.root_domain} website"
+  price_class = "PriceClass_100"
 
   origin {
-    domain_name = "${aws_s3_bucket.website.bucket_domain_name}"
+    domain_name = "${aws_s3_bucket.website.website_endpoint}"
     origin_id   = "S3-${var.root_domain}"
 
-    s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.website.cloudfront_access_identity_path}"
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 
@@ -73,7 +71,8 @@ resource "aws_cloudfront_distribution" "website" {
   }
 
   "viewer_certificate" {
-    acm_certificate_arn = "${aws_acm_certificate.website.arn}"
-    ssl_support_method  = "sni-only"
+    acm_certificate_arn      = "${aws_acm_certificate.website.arn}"
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2018"
   }
 }

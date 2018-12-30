@@ -13,3 +13,11 @@ module "ttys0" {
   r53_zoneid  = "${lookup(data.terraform_remote_state.dns.zones["ttys0"], "net")}"
   log_bucket  = "${data.terraform_remote_state.storage.website-logs}"
 }
+
+module "beezuscomplex" {
+  source = "../modules/s3_website"
+
+  root_domain = "beezuscomplex.com"
+  r53_zoneid  = "${lookup(data.terraform_remote_state.dns.zones["beezuscomplex"], "com")}"
+  log_bucket  = "${data.terraform_remote_state.storage.website-logs}"
+}
