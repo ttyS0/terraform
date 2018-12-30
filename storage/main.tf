@@ -21,3 +21,11 @@ data "terraform_remote_state" "dns" {
     encrypt = "true"
   }
 }
+
+output "website-logs" {
+  value = "${aws_s3_bucket.web_logs.id}"
+}
+
+output "terraform" {
+  value = "${aws_s3_bucket.terraform_state.id}"
+}

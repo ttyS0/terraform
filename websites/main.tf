@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket  = "skj-terraform"
-    key     = "websites.tfstate"
+    key     = "108minutes.tfstate"
     region  = "us-east-1"
     encrypt = "true"
   }
