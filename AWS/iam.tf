@@ -3,7 +3,7 @@ resource "aws_iam_user" "sean" {
   name = "sean"
 }
 
-# Vault Auth
+# Vault Admin Auth
 resource "aws_iam_user" "vault-auth" {
   name = "vault-auth"
   path = "/srv/"
@@ -92,3 +92,6 @@ data "aws_iam_policy_document" "vault-admin" {
     ]
   }
 }
+
+# Vault AWS
+
