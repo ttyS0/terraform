@@ -16,16 +16,15 @@ provider "vault" {
   address = "https://vault.ttys0.net"
 }
 
-
 # Ghost Website CDNs
 module "ghost-108minutes" {
   source = "../modules/ghost-cdn"
-  name = "ghost-108minutes-net"
+  name   = "ghost-108minutes-net"
   domain = "108minutes.net"
 }
 
 module "ghost-beezuscomplex" {
   source = "../modules/ghost-cdn"
-  name = "ghost-beezuscomplex-com"
+  name   = "ghost-beezuscomplex-com"
   domain = "beezuscomplex.com"
 }

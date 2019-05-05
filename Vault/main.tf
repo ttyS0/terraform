@@ -8,10 +8,22 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = "us-east-1"
+variable "fqdn" {
+  default = "vault.ttys0.net"
 }
 
 provider "vault" {
-  address = "https://vault.ttys0.net"
+  address = "https://${var.fqdn}"
+}
+
+data "terraform_remote_state" "aws" {
+  backend = "remote"
+
+  config {
+    organization = "TTYS0"
+
+    workspaces = {
+      name = "aws"
+    }
+  }
 }
