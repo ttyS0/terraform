@@ -3,6 +3,49 @@ resource "aws_iam_user" "sean" {
   name = "sean"
 }
 
+# Ghost IAM User for CDN Buckets
+resource "aws_iam_user" "ghost-s3" {
+  name = "ghost-s3"
+}
+
+data "aws_iam_policy_document" "ghost-s3" {
+  statement {
+    effect  = "Allow"
+    actions = ["s3:ListBucket"]
+
+    resources = [
+      "${module.ghost-108minutes.ghost-bucket-arn}",
+      "${module.ghost-beezuscomplex.ghost-bucket-arn}",
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:PutObjectVersionACL",
+      "s3:DeleteObject",
+      "s3:PutObjectAcl",
+    ]
+
+    resources = [
+      "${module.ghost-108minutes.ghost-bucket-arn}/*",
+      "${module.ghost-beezuscomplex.ghost-bucket-arn}/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "ghost-s3" {
+  policy = "${data.aws_iam_policy_document.ghost-s3.json}"
+}
+
+resource "aws_iam_user_policy_attachment" "ghost-s3" {
+  policy_arn = "${aws_iam_policy.ghost-s3.arn}"
+  user       = "${aws_iam_user.ghost-s3.name}"
+}
+
 # Vault Admin Auth
 resource "aws_iam_user" "vault-auth" {
   name = "vault-auth"
