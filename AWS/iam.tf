@@ -52,11 +52,6 @@ resource "aws_iam_user" "vault-auth" {
   path = "/srv/"
 }
 
-resource "aws_iam_access_key" "vault-auth" {
-  user    = "${aws_iam_user.vault-auth.name}"
-  pgp_key = "keybase:ttys0"
-}
-
 resource "aws_iam_policy" "vault-auth" {
   policy      = "${data.aws_iam_policy_document.vault-auth.json}"
   name        = "vault-auth"
@@ -153,8 +148,9 @@ resource "aws_iam_user_policy_attachment" "vault-aws" {
 }
 
 resource "aws_iam_role" "vault-aws-admin" {
-  assume_role_policy = "${data.aws_iam_policy_document.vault-aws-admin-trust.json}"
-  name               = "vault-aws-admin"
+  assume_role_policy   = "${data.aws_iam_policy_document.vault-aws-admin-trust.json}"
+  name                 = "vault-aws-admin"
+  max_session_duration = "43200"
 }
 
 resource "aws_iam_role_policy_attachment" "vault-aws-admin" {
@@ -210,5 +206,45 @@ data "aws_iam_policy_document" "vault-aws-admin-trust" {
       identifiers = ["${aws_iam_user.vault-aws.arn}"]
       type        = "AWS"
     }
+  }
+}
+
+## Consul Backup
+resource "aws_iam_policy" "consul-s3" {
+  policy = "${data.aws_iam_policy_document.consul-s3.json}"
+  name   = "vault-consul-s3"
+}
+
+resource "aws_iam_role" "consul-s3" {
+  assume_role_policy   = "${data.aws_iam_policy_document.vault-aws-admin-trust.json}"
+  name                 = "vault-consul-s3"
+  max_session_duration = "3600"
+}
+
+resource "aws_iam_role_policy_attachment" "consul-s3" {
+  policy_arn = "${aws_iam_policy.consul-s3.arn}"
+  role       = "${aws_iam_role.consul-s3.name}"
+}
+
+data "aws_iam_policy_document" "consul-s3" {
+  statement {
+    effect  = "Allow"
+    actions = ["s3:ListBucket"]
+
+    resources = [
+      "${aws_s3_bucket.skj-archive.arn}",
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:PutObject",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.skj-archive.arn}/consul/*",
+    ]
   }
 }

@@ -18,3 +18,11 @@ resource "vault_aws_secret_backend_role" "admin" {
 
   #role_arns = ["${data.terraform_remote_state.aws.vault-aws-admin-role}"]
 }
+
+resource "vault_aws_secret_backend_role" "consul-s3" {
+  backend         = "${vault_aws_secret_backend.aws.path}"
+  credential_type = "assumed_role"
+  name            = "consul-s3"
+
+  #role_arns = ["${data.terraform_remote_state.aws.vault-consul-s3-role}"]
+}
