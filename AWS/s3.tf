@@ -10,10 +10,10 @@ resource "aws_s3_bucket" "skj-archive" {
   lifecycle_rule {
     enabled                                = true
     id                                     = "freeze"
-    abort_incomplete_multipart_upload_days = 3
+    abort_incomplete_multipart_upload_days = 1
 
     transition {
-      days          = 14
+      days          = 7
       storage_class = "DEEP_ARCHIVE"
     }
   }
