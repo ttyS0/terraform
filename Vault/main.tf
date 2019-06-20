@@ -19,11 +19,11 @@ provider "vault" {
 data "terraform_remote_state" "aws" {
   backend = "remote"
 
-  config {
+  config = {
     organization = "TTYS0"
-
     workspaces = {
       name = "aws"
     }
   }
 }
+
