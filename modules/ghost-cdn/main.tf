@@ -12,9 +12,9 @@ variable "domain" {
 }
 
 resource "aws_s3_bucket" "ghost-bucket" {
-  bucket = "${var.name}"
-  acl    = "${var.acl}"
-  policy = "${data.aws_iam_policy_document.ghost-bucket.json}"
+  bucket = var.name
+  acl    = var.acl
+  policy = data.aws_iam_policy_document.ghost-bucket.json
 
   versioning {
     enabled = true
@@ -40,18 +40,27 @@ locals {
   fqdn         = "cdn.${var.domain}"
 }
 
-resource "aws_cloudfront_origin_access_identity" "ghost-cdn" {}
+resource "aws_cloudfront_origin_access_identity" "ghost-cdn" {
+}
 
 resource "aws_cloudfront_distribution" "ghost-cdn" {
   enabled         = true
   is_ipv6_enabled = true
   comment         = "Ghost CDN for ${var.name}"
-  aliases         = ["${local.fqdn}"]
+  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+  # force an interpolation expression to be interpreted as a list by wrapping it
+  # in an extra set of list brackets. That form was supported for compatibilty in
+  # v0.11, but is no longer supported in Terraform v0.12.
+  #
+  # If the expression in the following list itself returns a list, remove the
+  # brackets to avoid interpretation as a list of lists. If the expression
+  # returns a single list item then leave it as-is and remove this TODO comment.
+  aliases = [local.fqdn]
 
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "${local.s3_origin_id}"
+    target_origin_id       = local.s3_origin_id
     viewer_protocol_policy = "redirect-to-https"
 
     forwarded_values {
@@ -69,11 +78,11 @@ resource "aws_cloudfront_distribution" "ghost-cdn" {
   }
 
   origin {
-    domain_name = "${aws_s3_bucket.ghost-bucket.bucket_domain_name}"
-    origin_id   = "${local.s3_origin_id}"
+    domain_name = aws_s3_bucket.ghost-bucket.bucket_domain_name
+    origin_id   = local.s3_origin_id
 
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.ghost-cdn.cloudfront_access_identity_path}"
+      origin_access_identity = aws_cloudfront_origin_access_identity.ghost-cdn.cloudfront_access_identity_path
     }
   }
 
@@ -84,7 +93,7 @@ resource "aws_cloudfront_distribution" "ghost-cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = "${aws_acm_certificate.ghost-cdn.arn}"
+    acm_certificate_arn      = aws_acm_certificate.ghost-cdn.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2018"
   }
@@ -93,7 +102,7 @@ resource "aws_cloudfront_distribution" "ghost-cdn" {
 }
 
 resource "aws_acm_certificate" "ghost-cdn" {
-  domain_name       = "${local.fqdn}"
+  domain_name       = local.fqdn
   validation_method = "DNS"
 }
 
@@ -103,30 +112,31 @@ data "aws_route53_zone" "dns" {
 }
 
 resource "aws_route53_record" "cert_validation" {
-  name    = "${aws_acm_certificate.ghost-cdn.domain_validation_options.0.resource_record_name}"
-  type    = "${aws_acm_certificate.ghost-cdn.domain_validation_options.0.resource_record_type}"
-  zone_id = "${data.aws_route53_zone.dns.zone_id}"
-  records = ["${aws_acm_certificate.ghost-cdn.domain_validation_options.0.resource_record_value}"]
+  name    = aws_acm_certificate.ghost-cdn.domain_validation_options[0].resource_record_name
+  type    = aws_acm_certificate.ghost-cdn.domain_validation_options[0].resource_record_type
+  zone_id = data.aws_route53_zone.dns.zone_id
+  records = [aws_acm_certificate.ghost-cdn.domain_validation_options[0].resource_record_value]
   ttl     = 60
 }
 
 resource "aws_acm_certificate_validation" "cert" {
-  certificate_arn         = "${aws_acm_certificate.ghost-cdn.arn}"
-  validation_record_fqdns = ["${aws_route53_record.cert_validation.fqdn}"]
+  certificate_arn         = aws_acm_certificate.ghost-cdn.arn
+  validation_record_fqdns = [aws_route53_record.cert_validation.fqdn]
 }
 
 resource "aws_route53_record" "cdn_alias" {
-  name    = "${local.fqdn}"
+  name    = local.fqdn
   type    = "A"
-  zone_id = "${data.aws_route53_zone.dns.zone_id}"
+  zone_id = data.aws_route53_zone.dns.zone_id
 
   alias {
     evaluate_target_health = false
-    name                   = "${aws_cloudfront_distribution.ghost-cdn.domain_name}"
-    zone_id                = "${aws_cloudfront_distribution.ghost-cdn.hosted_zone_id}"
+    name                   = aws_cloudfront_distribution.ghost-cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.ghost-cdn.hosted_zone_id
   }
 }
 
 output "ghost-bucket-arn" {
-  value = "${aws_s3_bucket.ghost-bucket.arn}"
+  value = aws_s3_bucket.ghost-bucket.arn
 }
+

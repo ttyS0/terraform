@@ -10,9 +10,9 @@ terraform {
 
 provider "aws" {
   region     = "us-east-1"
-  access_key = "${data.vault_aws_access_credentials.admin-creds.access_key}"
-  secret_key = "${data.vault_aws_access_credentials.admin-creds.secret_key}"
-  token      = "${data.vault_aws_access_credentials.admin-creds.security_token}"
+  access_key = data.vault_aws_access_credentials.admin-creds.access_key
+  secret_key = data.vault_aws_access_credentials.admin-creds.secret_key
+  token      = data.vault_aws_access_credentials.admin-creds.security_token
 }
 
 provider "vault" {
@@ -22,9 +22,8 @@ provider "vault" {
 data "terraform_remote_state" "vault" {
   backend = "remote"
 
-  config {
+  config = {
     organization = "TTYS0"
-
     workspaces = {
       name = "vault"
     }
@@ -32,8 +31,8 @@ data "terraform_remote_state" "vault" {
 }
 
 data "vault_aws_access_credentials" "admin-creds" {
-  backend = "${data.terraform_remote_state.vault.vault-aws-path}"
-  role    = "${data.terraform_remote_state.vault.vault-aws-role-admin}"
+  backend = data.terraform_remote_state.vault.outputs.vault-aws-path
+  role    = data.terraform_remote_state.vault.outputs.vault-aws-role-admin
   type    = "sts"
 }
 
@@ -49,3 +48,4 @@ module "ghost-beezuscomplex" {
   name   = "ghost-beezuscomplex-com"
   domain = "beezuscomplex.com"
 }
+

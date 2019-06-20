@@ -8,7 +8,7 @@ variable "ttl_1h" {
 }
 
 variable "google_mx" {
-  type = "list"
+  type = list(string)
 
   default = [
     "1 aspmx.l.google.com.",
@@ -20,7 +20,7 @@ variable "google_mx" {
 }
 
 variable "public_zones" {
-  type = "list"
+  type = list(string)
 
   default = [
     "108minutes.net",
@@ -32,12 +32,12 @@ variable "public_zones" {
 }
 
 variable "ttys0_spf" {
-  type    = "string"
+  type    = string
   default = "v=spf1 include:_spf.google.com ~all"
 }
 
 variable "txt_spf" {
-  type = "list"
+  type = list(string)
 
   default = [
     "TXT",
@@ -47,30 +47,31 @@ variable "txt_spf" {
 
 ## Resources
 resource "aws_route53_zone" "public_zone" {
-  count = "${length(var.public_zones)}"
-  name  = "${var.public_zones[count.index]}"
+  count = length(var.public_zones)
+  name  = var.public_zones[count.index]
 }
 
 resource "aws_route53_record" "google_mx" {
-  count   = "${length(var.public_zones)}"
+  count   = length(var.public_zones)
   name    = ""
   type    = "MX"
-  zone_id = "${element(aws_route53_zone.public_zone.*.zone_id, count.index)}"
-  records = "${var.google_mx}"
-  ttl     = "${var.ttl_1d}"
+  zone_id = aws_route53_zone.public_zone.*.zone_id[count.index]
+  records = var.google_mx
+  ttl     = var.ttl_1d
 }
 
 ## ttys0.net records
 resource "aws_route53_record" "ttys0_spf" {
-  count   = "${length(var.txt_spf)}"
+  count   = length(var.txt_spf)
   name    = ""
-  type    = "${var.txt_spf[count.index]}"
-  zone_id = "${element(aws_route53_zone.public_zone.*.zone_id, 4)}"
-  ttl     = "${var.ttl_1d}"
-  records = ["${var.ttys0_spf}"]
+  type    = var.txt_spf[count.index]
+  zone_id = aws_route53_zone.public_zone.*.zone_id[4]
+  ttl     = var.ttl_1d
+  records = [var.ttys0_spf]
 }
 
 ## Outputs
 output "zones" {
-  value = "${zipmap(var.public_zones, aws_route53_zone.public_zone.*.zone_id)}"
+  value = zipmap(var.public_zones, aws_route53_zone.public_zone.*.zone_id)
 }
+
