@@ -27,3 +27,7 @@ data "terraform_remote_state" "aws" {
   }
 }
 
+data "vault_approle_auth_backend_role_id" "cert-manager" {
+  role_name = vault_approle_auth_backend_role.cert-manager.role_name
+  backend   = vault_auth_backend.approle.path
+}

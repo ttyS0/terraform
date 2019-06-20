@@ -19,3 +19,17 @@ EOT
 
 }
 
+resource "vault_policy" "cert-manager" {
+  name   = "cert-manager"
+  policy = <<EOT
+# Login with AppRole
+path "auth/approle/login" {
+  capabilities = [ "create", "read" ]
+}
+
+# Sign certs
+path "intCA/sign/ttys0-net" {
+  capabilities = [ "read", "create" ]
+}
+EOT
+}

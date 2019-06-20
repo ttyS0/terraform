@@ -11,6 +11,16 @@ resource "vault_aws_auth_backend_client" "vault-auth" {
   }
 }
 
+resource "vault_auth_backend" "approle" {
+  type = "approle"
+}
+
+resource "vault_approle_auth_backend_role" "cert-manager" {
+  role_name = "cert-manager"
+  backend   = vault_auth_backend.approle.path
+  policies  = [vault_policy.cert-manager.name]
+}
+
 # Vault Roles
 resource "vault_aws_auth_backend_role" "vault-admin" {
   role                     = "admin"
