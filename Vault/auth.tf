@@ -21,6 +21,11 @@ resource "vault_approle_auth_backend_role" "cert-manager" {
   policies  = [vault_policy.cert-manager.name]
 }
 
+resource "vault_approle_auth_backend_role_secret_id" "cert-manager" {
+  backend   = vault_auth_backend.approle.path
+  role_name = vault_approle_auth_backend_role.cert-manager.role_name
+}
+
 # Vault Roles
 resource "vault_aws_auth_backend_role" "vault-admin" {
   role                     = "admin"

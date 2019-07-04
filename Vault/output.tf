@@ -7,5 +7,9 @@ output "vault-aws-role-admin" {
 }
 
 output "cert-manager-roleId" {
-  value = data.vault_approle_auth_backend_role_id.cert-manager.role_id
+  value = vault_approle_auth_backend_role.cert-manager.role_id
+}
+output "cert-manager-secretId" {
+  value     = vault_approle_auth_backend_role_secret_id.cert-manager.secret_id
+  sensitive = true
 }

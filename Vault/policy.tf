@@ -31,5 +31,8 @@ path "auth/approle/login" {
 path "intCA/sign/ttys0-net" {
   capabilities = [ "read", "create" ]
 }
+path "elkCA/sign/elk" {
+  capabilities = [ "read", "create" ]
+}
 EOT
 }
