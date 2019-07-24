@@ -36,26 +36,26 @@ resource "vault_ssh_secret_backend_role" "home" {
   }
 }
 
-resource "vault_pki_secret_backend" "elkCA" {
-  path                  = "elkCA"
-  max_lease_ttl_seconds = 315360000 # ten years
+resource "vault_pki_secret_backend" "elasticCA" {
+  path                  = "elasticCA"
+  max_lease_ttl_seconds = 31536000 # one year
   description           = "Elasticsearch CA"
 }
 
-resource "vault_pki_secret_backend_root_cert" "elkCA" {
-  depends_on           = [vault_pki_secret_backend.elkCA]
-  backend              = vault_pki_secret_backend.elkCA.path
+resource "vault_pki_secret_backend_root_cert" "elasticCA" {
+  depends_on           = [vault_pki_secret_backend.elasticCA]
+  backend              = vault_pki_secret_backend.elasticCA.path
   common_name          = "Elasticsearch CA"
   type                 = "internal"
   exclude_cn_from_sans = true
   format               = "pem"
-  ttl                  = "315360000"
+  ttl                  = "31536000"
 }
 
-resource "vault_pki_secret_backend_role" "elk" {
-  backend            = vault_pki_secret_backend.elkCA.path
-  name               = "elk"
-  allowed_domains    = ["instance"]
+resource "vault_pki_secret_backend_role" "elastic" {
+  backend            = vault_pki_secret_backend.elasticCA.path
+  name               = "elastic"
+  allowed_domains    = ["instance", "es-master", "es-master-0", "es-master-1", "es-master-2"]
   allow_bare_domains = true
   allow_subdomains   = true
   allow_glob_domains = true

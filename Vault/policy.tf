@@ -29,10 +29,10 @@ path "auth/approle/login" {
 
 # Sign certs
 path "intCA/sign/ttys0-net" {
-  capabilities = [ "read", "create" ]
+  capabilities = [ "update", "create" ]
 }
-path "elkCA/sign/elk" {
-  capabilities = [ "read", "create" ]
+path "elasticCA/sign/elastic" {
+  capabilities = [ "update", "create" ]
 }
 EOT
 }
