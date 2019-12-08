@@ -18,13 +18,8 @@ data "vault_generic_secret" "cloudflare" {
 
 provider "cloudflare" {
   api_key = data.vault_generic_secret.cloudflare.data["global-api-key"]
-  email = data.vault_generic_secret.cloudflare.data["email"]
+  email   = data.vault_generic_secret.cloudflare.data["email"]
 }
 
-resource "cloudflare_zone" "zones" {
-  count = length(var.domains)
-  zone = var.domains[count.index]
-  plan = "free"
-  type = "full"
-}
+
 
