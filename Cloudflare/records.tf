@@ -122,3 +122,19 @@ resource "cloudflare_record" "ttys0_www" {
   value   = "ttys0.github.io"
   zone_id = module.ttys0_net.zoneid
 }
+
+resource "cloudflare_record" "skj_apex" {
+  name    = "skj.dev"
+  type    = "CNAME"
+  proxied = true
+  value   = "ttys0.github.io"
+  zone_id = module.skj_dev.zoneid
+}
+
+resource "cloudflare_record" "skj_www" {
+  name    = "www"
+  type    = "CNAME"
+  proxied = true
+  value   = "ttys0.github.io"
+  zone_id = module.skj_dev.zoneid
+}
