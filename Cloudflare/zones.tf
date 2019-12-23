@@ -47,3 +47,27 @@ module "seanjohnson_name" {
   source = "../modules/cloudflare_zone"
   domain = "seanjohnson.name"
 }
+
+resource "cloudflare_zone" "videotranscoding_wiki" {
+  zone = "videotranscoding.wiki"
+  plan = "free"
+  type = "full"
+}
+
+resource "cloudflare_zone" "videotranscoding_dev" {
+  zone = "videotranscoding.dev"
+  plan = "free"
+  type = "full"
+}
+
+resource "cloudflare_zone" "videotranscoding_net" {
+  zone = "videotranscoding.net"
+  plan = "free"
+  type = "full"
+}
+
+resource "cloudflare_zone" "videotranscoding_org" {
+  zone = "videotranscoding.org"
+  plan = "free"
+  type = "full"
+}

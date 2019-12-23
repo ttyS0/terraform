@@ -138,3 +138,19 @@ resource "cloudflare_record" "skj_www" {
   value   = "ttys0.github.io"
   zone_id = module.skj_dev.zoneid
 }
+
+resource "cloudflare_record" "skj_wiki" {
+  name    = "wiki"
+  type    = "CNAME"
+  proxied = true
+  zone_id = module.skj_dev.zoneid
+  value   = cloudflare_record.ttys0_home-ipv4.hostname
+}
+
+resource "cloudflare_record" "videotranscoding_wiki" {
+  name    = "videotranscoding.wiki"
+  type    = "CNAME"
+  proxied = true
+  zone_id = cloudflare_zone.videotranscoding_wiki.id
+  value   = cloudflare_record.ttys0_home-ipv4.hostname
+}
