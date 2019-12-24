@@ -154,3 +154,11 @@ resource "cloudflare_record" "videotranscoding_wiki" {
   zone_id = cloudflare_zone.videotranscoding_wiki.id
   value   = cloudflare_record.ttys0_home-ipv4.hostname
 }
+
+resource "cloudflare_record" "videotranscoding_dev" {
+  name = "videotranscoding.dev"
+  type = "CNAME"
+  proxied = true
+  zone_id = cloudflare_zone.videotranscoding_dev.id
+  value = cloudflare_record.ttys0_home-ipv4.hostname
+}
