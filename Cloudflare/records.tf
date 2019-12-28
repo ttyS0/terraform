@@ -123,7 +123,7 @@ resource "cloudflare_record" "ttys0_www" {
   zone_id = module.ttys0_net.zoneid
 }
 
-resource "cloudflare_record" "skj_apex" {
+resource "cloudflare_record" "skj_dev_apex" {
   name    = "skj.dev"
   type    = "CNAME"
   proxied = true
@@ -131,7 +131,7 @@ resource "cloudflare_record" "skj_apex" {
   zone_id = module.skj_dev.zoneid
 }
 
-resource "cloudflare_record" "skj_www" {
+resource "cloudflare_record" "skj_dev_www" {
   name    = "www"
   type    = "CNAME"
   proxied = true
@@ -139,12 +139,12 @@ resource "cloudflare_record" "skj_www" {
   zone_id = module.skj_dev.zoneid
 }
 
-resource "cloudflare_record" "skj_wiki" {
-  name    = "wiki"
-  type    = "CNAME"
+resource "cloudflare_record" "skj_wiki_apex" {
+  name = "skj.wiki"
+  type = "CNAME"
+  value = cloudflare_record.ttys0_home-ipv4.hostname
   proxied = true
-  zone_id = module.skj_dev.zoneid
-  value   = cloudflare_record.ttys0_home-ipv4.hostname
+  zone_id = module.skj_wiki.zoneid
 }
 
 resource "cloudflare_record" "videotranscoding_wiki" {

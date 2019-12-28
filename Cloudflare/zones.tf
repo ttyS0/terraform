@@ -33,6 +33,11 @@ module "skj_dev" {
   domain = "skj.dev"
 }
 
+module "skj_wiki" {
+  source = "../modules/cloudflare_zone"
+  domain = "skj.wiki"
+}
+
 module "amateur_dev" {
   source = "../modules/cloudflare_zone"
   domain = "amateur.dev"
