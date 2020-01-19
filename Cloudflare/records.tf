@@ -127,7 +127,7 @@ resource "cloudflare_record" "skj_dev_apex" {
   name    = "skj.dev"
   type    = "CNAME"
   proxied = true
-  value   = "ttys0.github.io"
+  value   = cloudflare_record.ttys0_home-ipv4.hostname
   zone_id = module.skj_dev.zoneid
 }
 
@@ -135,7 +135,7 @@ resource "cloudflare_record" "skj_dev_www" {
   name    = "www"
   type    = "CNAME"
   proxied = true
-  value   = "ttys0.github.io"
+  value   = cloudflare_record.ttys0_home-ipv4.hostname
   zone_id = module.skj_dev.zoneid
 }
 
