@@ -111,7 +111,7 @@ resource "cloudflare_record" "ttys0_apex" {
   name    = "ttys0.net"
   type    = "CNAME"
   proxied = true
-  value   = "ttys0.github.io"
+  value   = cloudflare_record.ttys0_home-ipv4.hostname
   zone_id = module.ttys0_net.zoneid
 }
 
@@ -119,7 +119,7 @@ resource "cloudflare_record" "ttys0_www" {
   name    = "www"
   type    = "CNAME"
   proxied = true
-  value   = "ttys0.github.io"
+  value   = cloudflare_record.ttys0_home-ipv4.hostname
   zone_id = module.ttys0_net.zoneid
 }
 
