@@ -6,6 +6,12 @@ terraform {
       name = "aws"
     }
   }
+
+  required_providers {
+    aws = "~> 2.53"
+    dns = "~> 2.2"
+    vault = "~> 2.9"
+  }
 }
 
 provider "aws" {
@@ -15,8 +21,13 @@ provider "aws" {
   token      = data.vault_aws_access_credentials.admin-creds.security_token
 }
 
+variable "vault_token" {
+  default = ""
+}
+
 provider "vault" {
   address = "https://vault.ttys0.net"
+  token = var.vault_token
 }
 
 data "terraform_remote_state" "vault" {
