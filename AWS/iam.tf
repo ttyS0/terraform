@@ -3,6 +3,15 @@ resource "aws_iam_user" "sean" {
   name = "sean"
 }
 
+resource "aws_iam_user_ssh_key" "sean" {
+  encoding = "SSH"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDumCrRqbtcApi4chDkQriLIp2Apeev57LMmROsBn4fNwbmWdwe3mWzqIGQIHzfyZMvUs6pJa9MZe5Yy11sDp0GSNZ+EAt6EZsjB36MproGUuTFYdhxoVLPBa+843MsH4VKeW1onMGCBypboXHdEvogorDU3+7j7gP0JPESKujaitA9k+vC35uvVyxKpIcQvR5s6BBI2W7nc1OfrquhZy6TuhmMhYOVKYpGhuF/xtlNGCUQ8oRw5xGV6QcVCWC+3Mm0v7uU8z38C/VpEYMebi2KLvzepfZ9kdrreEsyRPhHwwRzpn8pU4a98R3KoI6uxLl0DuyaldBHqcB0a52Y7Opz sean@nazgul.ttys0.net"
+  username = aws_iam_user.sean.name
+}
+
+
+#########
+
 # Ghost IAM User for CDN Buckets
 resource "aws_iam_user" "ghost-s3" {
   name = "ghost-s3"
@@ -10,8 +19,9 @@ resource "aws_iam_user" "ghost-s3" {
 
 data "aws_iam_policy_document" "ghost-s3" {
   statement {
-    effect  = "Allow"
-    actions = ["s3:ListBucket"]
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket"]
 
     resources = [
       module.ghost-108minutes.ghost-bucket-arn,
@@ -130,6 +140,7 @@ data "aws_iam_policy_document" "vault-admin" {
     ]
   }
 }
+##########
 
 # Vault AWS
 resource "aws_iam_user" "vault-aws" {
@@ -208,44 +219,5 @@ data "aws_iam_policy_document" "vault-aws-admin-trust" {
     }
   }
 }
-
-## Consul Backup
-resource "aws_iam_policy" "consul-s3" {
-  policy = data.aws_iam_policy_document.consul-s3.json
-  name   = "vault-consul-s3"
-}
-
-resource "aws_iam_role" "consul-s3" {
-  assume_role_policy   = data.aws_iam_policy_document.vault-aws-admin-trust.json
-  name                 = "vault-consul-s3"
-  max_session_duration = "3600"
-}
-
-resource "aws_iam_role_policy_attachment" "consul-s3" {
-  policy_arn = aws_iam_policy.consul-s3.arn
-  role       = aws_iam_role.consul-s3.name
-}
-
-data "aws_iam_policy_document" "consul-s3" {
-  statement {
-    effect  = "Allow"
-    actions = ["s3:ListBucket"]
-
-    resources = [
-      aws_s3_bucket.skj-backups.arn,
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "s3:PutObject",
-    ]
-
-    resources = [
-      "${aws_s3_bucket.skj-backups.arn}/consul/*",
-    ]
-  }
-}
+##########
 

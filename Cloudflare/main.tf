@@ -6,6 +6,12 @@ terraform {
       name = "cloudflare"
     }
   }
+
+  required_providers {
+    vault = "~> 2.10"
+    cloudflare = "~> 2.5.1"
+    dns = "~> 2.2"
+  }
 }
 
 variable "vault_token" {
@@ -18,7 +24,7 @@ provider "vault" {
 }
 
 data "vault_generic_secret" "cloudflare" {
-  path = "secret/cloudflare"
+  path = "vault/cloudflare"
 }
 
 provider "cloudflare" {

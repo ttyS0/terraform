@@ -8,14 +8,10 @@ resource "aws_s3_bucket" "skj-archive" {
   }
 
   lifecycle_rule {
-    enabled                                = true
-    id                                     = "freeze"
+    enabled = true
+    id = "clear_stale_uploads"
     abort_incomplete_multipart_upload_days = 1
 
-    transition {
-      days          = 7
-      storage_class = "DEEP_ARCHIVE"
-    }
   }
 
   server_side_encryption_configuration {
@@ -35,29 +31,4 @@ resource "aws_s3_bucket_public_access_block" "skj-archive" {
   restrict_public_buckets = true
 }
 
-# Backup Bucket
-resource "aws_s3_bucket" "skj-backups" {
-  bucket = "skj-backups"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "skj-backups" {
-  bucket                  = aws_s3_bucket.skj-backups.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
 

@@ -8,10 +8,12 @@ terraform {
   }
 
   required_providers {
-    aws = "~> 2.53"
+    aws = "~> 2.57"
     dns = "~> 2.2"
-    vault = "~> 2.9"
+    vault = "~> 2.10"
   }
+
+  required_version = ">= 0.12"
 }
 
 provider "aws" {
@@ -47,6 +49,7 @@ data "vault_aws_access_credentials" "admin-creds" {
   type    = "sts"
 }
 
+## Modules
 # Ghost Website CDNs
 module "ghost-108minutes" {
   source = "../modules/ghost-cdn"
