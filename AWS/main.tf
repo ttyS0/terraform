@@ -75,3 +75,8 @@ locals {
 resource "aws_default_vpc" "vpc" {
 
 }
+
+resource "aws_key_pair" "home" {
+  key_name = "home"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDumCrRqbtcApi4chDkQriLIp2Apeev57LMmROsBn4fNwbmWdwe3mWzqIGQIHzfyZMvUs6pJa9MZe5Yy11sDp0GSNZ+EAt6EZsjB36MproGUuTFYdhxoVLPBa+843MsH4VKeW1onMGCBypboXHdEvogorDU3+7j7gP0JPESKujaitA9k+vC35uvVyxKpIcQvR5s6BBI2W7nc1OfrquhZy6TuhmMhYOVKYpGhuF/xtlNGCUQ8oRw5xGV6QcVCWC+3Mm0v7uU8z38C/VpEYMebi2KLvzepfZ9kdrreEsyRPhHwwRzpn8pU4a98R3KoI6uxLl0DuyaldBHqcB0a52Y7Opz sean@nazgul.ttys0.net"
+}
