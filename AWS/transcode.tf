@@ -3,12 +3,14 @@ data "aws_ami" "ubuntu1804" {
   most_recent = true
 
   owners = [
-    "099720109477"]
+    "099720109477"
+  ]
 
   filter {
     name = "name"
     values = [
-      "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+      "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+    ]
   }
 }
 
@@ -22,7 +24,8 @@ resource "aws_spot_instance_request" "cuda" {
   key_name = aws_key_pair.home.key_name
 
   vpc_security_group_ids = [
-    aws_security_group.allow-ssh.id]
+    aws_security_group.allow-ssh.id
+  ]
 
   associate_public_ip_address = true
 
@@ -52,7 +55,8 @@ resource "aws_security_group" "allow-ssh" {
     protocol = "tcp"
     to_port = 22
     cidr_blocks = [
-      "${local.pubip}/32"]
+      "${local.pubip}/32"
+    ]
   }
 
   egress {
@@ -60,15 +64,17 @@ resource "aws_security_group" "allow-ssh" {
     to_port = 0
     protocol = "-1"
     cidr_blocks = [
-      "0.0.0.0/0"]
+      "0.0.0.0/0"
+    ]
   }
 }
 
-data "aws_iam_policy_document" "skj-archive" {
+data "aws_iam_policy_document" "transcode-bucket" {
   statement {
     effect = "Allow"
     actions = [
-      "s3:ListBucket"]
+      "s3:ListBucket"
+    ]
 
     resources = [
       aws_s3_bucket.skj-archive.arn
@@ -87,7 +93,7 @@ data "aws_iam_policy_document" "skj-archive" {
     ]
 
     resources = [
-      "${aws_s3_bucket.skj-archive.arn}/*"
+      "${aws_s3_bucket.skj-archive.arn}/transcode/*"
     ]
   }
 }
@@ -122,7 +128,7 @@ resource "aws_iam_policy" "cuda-policy" {
   name = "cuda-policy"
   description = "EC2 Access for CUDA instances"
 
-  policy = data.aws_iam_policy_document.skj-archive.json
+  policy = data.aws_iam_policy_document.transcode-bucket.json
 }
 
 resource "aws_iam_instance_profile" "cuda-role" {
