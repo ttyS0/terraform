@@ -11,6 +11,7 @@ terraform {
     aws = "~> 2.57"
     dns = "~> 2.2"
     vault = "~> 2.10"
+    http = "~> 1.2.0"
   }
 
   required_version = ">= 0.12"
@@ -53,13 +54,24 @@ data "vault_aws_access_credentials" "admin-creds" {
 # Ghost Website CDNs
 module "ghost-108minutes" {
   source = "../modules/ghost-cdn"
-  name   = "ghost-108minutes-net"
+  name = "ghost-108minutes-net"
   domain = "108minutes.net"
 }
 
 module "ghost-beezuscomplex" {
   source = "../modules/ghost-cdn"
-  name   = "ghost-beezuscomplex-com"
+  name = "ghost-beezuscomplex-com"
   domain = "beezuscomplex.com"
 }
 
+data "http" "public_ipv4" {
+  url = "http://ipv4.icanhazip.com"
+}
+
+locals {
+  pubip = chomp(data.http.public_ipv4.body)
+}
+
+resource "aws_default_vpc" "vpc" {
+
+}
