@@ -32,12 +32,12 @@ apt-get -y clean
 
 # Setup transcoding mount
 mkfs.xfs /dev/nvme0n1
-echo "/dev/nvme0n1 /mnt xfs defaults 0 0" >> /etc/fstab
+echo "/dev/nvme0n1 /mnt xfs defaults 0 0" >>/etc/fstab
 mount /mnt
 mkdir -p /mnt/transcode/src
 chown -R ubuntu /mnt
 
 # Add an alias for the Docker other-transcode command
-echo -e "\nalias tv='docker run --rm --gpus all -v \$(pwd):\$(pwd) -w \$(pwd) ttys0/other-transcode-nvidia --hevc --nvenc-temporal-aq --cuvid'\n" >> /home/ubuntu/.bashrc
+echo -e "\nalias tv='docker run --rm --gpus all -v \$(pwd):\$(pwd) -w \$(pwd) ttys0/other-transcode-nvidia --hevc --nvenc-temporal-aq --cuvid'\n" >>/home/ubuntu/.bashrc
 
 reboot
