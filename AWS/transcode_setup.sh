@@ -32,7 +32,7 @@ apt-get -y clean
 
 # Setup transcoding mount
 mkfs.xfs /dev/nvme0n1
-echo "/dev/nvme0n1 /mnt xfs defaults 0 0" >>/etc/fstab
+echo "/dev/nvme0n1 /mnt xfs defaults 0 0" >> /etc/fstab
 mount /mnt
 mkdir -p /mnt/transcode/src
 chown -R ubuntu /mnt
