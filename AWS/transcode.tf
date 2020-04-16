@@ -135,3 +135,7 @@ resource "aws_iam_instance_profile" "cuda-role" {
 output "cuda-pubip" {
   value = aws_spot_instance_request.cuda.public_ip
 }
+
+output "cuda-instanceid" {
+  value = aws_spot_instance_request.cuda.spot_instance_id
+}
