@@ -210,14 +210,21 @@ data "aws_iam_policy_document" "vault-aws" {
 
 data "aws_iam_policy_document" "vault-aws-admin-trust" {
   statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"]
 
     principals {
-      identifiers = [aws_iam_user.vault-aws.arn]
-      type        = "AWS"
+      identifiers = [
+        aws_iam_user.vault-aws.arn]
+      type = "AWS"
     }
   }
 }
+
+output "vault-aws-admin-role-arn" {
+  value = aws_iam_role.vault-aws-admin.arn
+}
+
 ##########
 

@@ -14,6 +14,7 @@ resource "vault_aws_secret_backend_role" "admin" {
   credential_type = "assumed_role"
   name            = "admin"
 
-  role_arns = [data.terraform_remote_state.aws.outputs.vault-aws-admin-role]
+  role_arns = [
+    data.terraform_remote_state.aws.outputs.vault-aws-admin-role-arn]
 }
 

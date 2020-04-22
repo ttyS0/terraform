@@ -40,3 +40,14 @@ data "terraform_remote_state" "aws" {
 data "vault_generic_secret" "vault-aws" {
   path = "vault/aws/vault-aws"
 }
+
+resource "vault_mount" "transit" {
+  path = "transit"
+  type = "transit"
+}
+
+resource "vault_transit_secret_backend_key" "autounseal" {
+  backend = vault_mount.transit.path
+  name = "autounseal"
+  deletion_allowed = false
+}
