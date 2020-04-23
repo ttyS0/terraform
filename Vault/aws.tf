@@ -18,3 +18,10 @@ resource "vault_aws_secret_backend_role" "admin" {
     data.terraform_remote_state.aws.outputs.vault-aws-admin-role-arn]
 }
 
+output "vault-aws-path" {
+  value = vault_aws_secret_backend.aws.path
+}
+
+output "vault-aws-role-admin" {
+  value = vault_aws_secret_backend_role.admin.name
+}
