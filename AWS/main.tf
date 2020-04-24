@@ -8,7 +8,7 @@ terraform {
   }
 
   required_providers {
-    aws = "~> 2.57"
+    aws = "~> 2.59"
     dns = "~> 2.2"
     vault = "~> 2.10"
     http = "~> 1.2.0"
@@ -72,8 +72,10 @@ locals {
   pubip = chomp(data.http.public_ipv4.body)
 }
 
-resource "aws_default_vpc" "vpc" {
+resource "aws_default_vpc" "vpc" {}
 
+resource "aws_default_subnet" "az1" {
+  availability_zone = "us-east-1a"
 }
 
 resource "aws_key_pair" "home" {

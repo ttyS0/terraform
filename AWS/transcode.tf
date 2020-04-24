@@ -1,3 +1,8 @@
+variable "nvenc_node_number" {
+  default = 0
+}
+
+
 data "aws_ami" "ubuntu1804" {
 
   most_recent = true
@@ -14,30 +19,42 @@ data "aws_ami" "ubuntu1804" {
   }
 }
 
-resource "aws_spot_instance_request" "cuda" {
-  ami = data.aws_ami.ubuntu1804.id
+resource "aws_launch_configuration" "nvenc" {
+  image_id = data.aws_ami.ubuntu1804.id
   instance_type = "g4dn.xlarge"
-  spot_price = "0.20"
-  spot_type = "one-time"
-  wait_for_fulfillment = true
+  spot_price = "0.25"
 
-  key_name = aws_key_pair.home.key_name
-
-  vpc_security_group_ids = [
+  iam_instance_profile = aws_iam_instance_profile.nvenc-role.name
+  security_groups = [
     aws_security_group.allow-ssh.id
   ]
 
+  key_name = aws_key_pair.home.key_name
   associate_public_ip_address = true
-
-  iam_instance_profile = aws_iam_instance_profile.cuda-role.name
-
-  root_block_device {
-    volume_size = "10"
-  }
 
   user_data = file("transcode_setup.sh")
 
+  root_block_device {
+    volume_size = "20"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
+
+resource "aws_autoscaling_group" "nvenc" {
+  max_size = 5
+  min_size = 0
+  desired_capacity = var.nvenc_node_number
+
+  name = "nvenc"
+  launch_configuration = aws_launch_configuration.nvenc.name
+  vpc_zone_identifier = [
+    aws_default_subnet.az1.id]
+
+}
+
 
 resource "aws_security_group" "allow-ssh" {
   name = "allow_ssh"
@@ -93,7 +110,7 @@ data "aws_iam_policy_document" "transcode-bucket" {
   }
 }
 
-data "aws_iam_policy_document" "cuda-node" {
+data "aws_iam_policy_document" "nvenc-node" {
   statement {
     effect = "Allow"
 
@@ -109,33 +126,27 @@ data "aws_iam_policy_document" "cuda-node" {
   }
 }
 
-resource "aws_iam_role" "cuda-role" {
-  name = "cuda_role"
+resource "aws_iam_role" "nvenc-role" {
+  name = "nvenc_role"
 
-  assume_role_policy = data.aws_iam_policy_document.cuda-node.json
+  assume_role_policy = data.aws_iam_policy_document.nvenc-node.json
 }
 
-resource "aws_iam_role_policy_attachment" "cuda-role" {
-  role = aws_iam_role.cuda-role.name
-  policy_arn = aws_iam_policy.cuda-policy.arn
+resource "aws_iam_role_policy_attachment" "nvenc-role" {
+  role = aws_iam_role.nvenc-role.name
+  policy_arn = aws_iam_policy.nvenc-policy.arn
 }
 
-resource "aws_iam_policy" "cuda-policy" {
-  name = "cuda-policy"
-  description = "EC2 Access for CUDA instances"
+resource "aws_iam_policy" "nvenc-policy" {
+  name = "nvenc-policy"
+  description = "EC2 Access for NVENC instances"
 
   policy = data.aws_iam_policy_document.transcode-bucket.json
 }
 
-resource "aws_iam_instance_profile" "cuda-role" {
-  name = "cuda-role"
-  role = aws_iam_role.cuda-role.name
+resource "aws_iam_instance_profile" "nvenc-role" {
+  name = "nvenc-role"
+  role = aws_iam_role.nvenc-role.name
 }
 
-output "cuda-pubip" {
-  value = aws_spot_instance_request.cuda.public_ip
-}
 
-output "cuda-instanceid" {
-  value = aws_spot_instance_request.cuda.spot_instance_id
-}
