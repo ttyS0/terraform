@@ -40,11 +40,11 @@ data "terraform_remote_state" "aws" {
 }
 
 data "vault_generic_secret" "vault-aws" {
-  path = "vault/aws/vault-aws"
+  path = "kv/aws/vault-aws"
 }
 
-data "vault_generic_secret" "vault-bombadil" {
-  path = "vault/bombadil/vault"
+data "vault_generic_secret" "vault-smaug" {
+  path = "kv/vault/smaug"
 }
 
 resource "vault_mount" "transit" {
