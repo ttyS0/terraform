@@ -38,6 +38,6 @@ mkdir -p /mnt/transcode/src
 chown -R ubuntu /mnt
 
 # Add an alias for the Docker other-transcode command
-echo -e "\nalias tv='docker run --rm --gpus all -v \$(pwd):\$(pwd) -w \$(pwd) ttys0/other-transcode-nvidia --hevc --nvenc-temporal-aq --cuvid'\n" >>/home/ubuntu/.bashrc
+echo -e "\nalias tv='docker run --rm --gpus all -v \$(pwd):\$(pwd) -w \$(pwd) ttys0/other-transcode-nvidia --hevc --nvenc-temporal-aq'\n" >>/home/ubuntu/.bashrc
 
 reboot
