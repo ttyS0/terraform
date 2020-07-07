@@ -2,3 +2,4 @@
 *.iml
 .states
 .envrc
+.DS_Store
