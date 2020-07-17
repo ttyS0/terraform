@@ -8,9 +8,9 @@ terraform {
   }
 
   required_providers {
-    aws = "~> 2.59"
+    aws = "~> 2.70"
     dns = "~> 2.2"
-    vault = "~> 2.10"
+    vault = "~> 2.11"
     http = "~> 1.2.0"
   }
 
@@ -52,12 +52,6 @@ data "vault_aws_access_credentials" "admin-creds" {
 
 ## Modules
 # Ghost Website CDNs
-module "ghost-108minutes" {
-  source = "../modules/ghost-cdn"
-  name = "ghost-108minutes-net"
-  domain = "108minutes.net"
-}
-
 module "ghost-beezuscomplex" {
   source = "../modules/ghost-cdn"
   name = "ghost-beezuscomplex-com"

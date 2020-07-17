@@ -24,7 +24,6 @@ data "aws_iam_policy_document" "ghost-s3" {
       "s3:ListBucket"]
 
     resources = [
-      module.ghost-108minutes.ghost-bucket-arn,
       module.ghost-beezuscomplex.ghost-bucket-arn,
     ]
   }
@@ -41,7 +40,6 @@ data "aws_iam_policy_document" "ghost-s3" {
     ]
 
     resources = [
-      "${module.ghost-108minutes.ghost-bucket-arn}/*",
       "${module.ghost-beezuscomplex.ghost-bucket-arn}/*",
     ]
   }
