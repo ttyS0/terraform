@@ -3,7 +3,7 @@ variable "nvenc_node_number" {
 }
 
 
-data "aws_ami" "ubuntu1804" {
+data "aws_ami" "ubuntu" {
 
   most_recent = true
 
@@ -14,13 +14,13 @@ data "aws_ami" "ubuntu1804" {
   filter {
     name = "name"
     values = [
-      "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+      "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
     ]
   }
 }
 
 resource "aws_launch_configuration" "nvenc" {
-  image_id = data.aws_ami.ubuntu1804.id
+  image_id = data.aws_ami.ubuntu.id
   instance_type = "g4dn.xlarge"
   spot_price = "0.25"
 
