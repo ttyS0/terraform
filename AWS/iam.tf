@@ -55,16 +55,16 @@ resource "aws_iam_user_policy_attachment" "ghost-s3" {
 }
 
 # Vault Admin Auth
-resource "aws_iam_user" "vault-auth" {
-  name = "vault-auth"
-  path = "/srv/"
-}
-
-resource "aws_iam_policy" "vault-auth" {
-  policy      = data.aws_iam_policy_document.vault-auth.json
-  name        = "vault-auth"
-  description = "Allows lookup of IAM User and Role for validaton by Vault"
-}
+//resource "aws_iam_user" "vault-auth" {
+//  name = "vault-auth"
+//  path = "/srv/"
+//}
+//
+//resource "aws_iam_policy" "vault-auth" {
+//  policy      = data.aws_iam_policy_document.vault-auth.json
+//  name        = "vault-auth"
+//  description = "Allows lookup of IAM User and Role for validaton by Vault"
+//}
 
 resource "aws_iam_policy" "vault-admin" {
   policy      = data.aws_iam_policy_document.vault-admin.json
@@ -72,10 +72,10 @@ resource "aws_iam_policy" "vault-admin" {
   description = "Allows STS to role that maps to Vault Admin"
 }
 
-resource "aws_iam_user_policy_attachment" "vault-auth" {
-  policy_arn = aws_iam_policy.vault-auth.arn
-  user       = aws_iam_user.vault-auth.name
-}
+//resource "aws_iam_user_policy_attachment" "vault-auth" {
+//  policy_arn = aws_iam_policy.vault-auth.arn
+//  user       = aws_iam_user.vault-auth.name
+//}
 
 resource "aws_iam_group" "vault-admin" {
   name = "vault-admin"

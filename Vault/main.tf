@@ -7,10 +7,11 @@ terraform {
     }
   }
   required_providers {
-    vault = "~> 2.10"
+    vault = {
+      source  = "hashicorp/vault"
+      version = "~> 2.13"
+    }
   }
-
-  required_version = ">= 0.12"
 }
 
 variable "home" {
@@ -24,9 +25,8 @@ variable "home_token" {
 
 provider "vault" {
   address = "https://${var.home}"
-  token = var.home_token
+  token   = var.home_token
 }
-
 
 data "terraform_remote_state" "aws" {
   backend = "remote"
@@ -40,22 +40,13 @@ data "terraform_remote_state" "aws" {
 }
 
 data "vault_generic_secret" "vault-aws" {
-  path = "kv/aws/vault-aws"
+  path = "secrets/aws/vault-aws"
 }
 
-data "vault_generic_secret" "vault-smaug" {
-  path = "kv/vault/smaug"
-}
 
 resource "vault_mount" "transit" {
   path = "transit"
   type = "transit"
-}
-
-resource "vault_transit_secret_backend_key" "autounseal" {
-  backend = vault_mount.transit.path
-  name = "autounseal"
-  deletion_allowed = false
 }
 
 resource "vault_auth_backend" "userpass" {

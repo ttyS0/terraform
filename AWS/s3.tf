@@ -11,7 +11,10 @@ resource "aws_s3_bucket" "skj-archive" {
     enabled = true
     id = "clear_stale_uploads"
     abort_incomplete_multipart_upload_days = 1
-
+    expiration {
+      days = "0"
+      expired_object_delete_marker = false
+    }
   }
 
   server_side_encryption_configuration {
