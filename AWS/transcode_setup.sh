@@ -4,7 +4,6 @@
 apt-get -y update
 apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common awscli
 
-
 # Copy over NVidia Driver meta-package and install cuda-drivers
 aws s3 cp s3://skj-archive/transcode/pkg/nvidia-driver-local-repo-ubuntu2004-450.51.06_1.0-1_amd64.deb .
 apt-get -y install ./nvidia-driver-local-repo-ubuntu2004-450.51.06_1.0-1_amd64.deb
