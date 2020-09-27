@@ -32,4 +32,6 @@ chown -R ubuntu /mnt
 # Add an alias for the Docker other-transcode command
 echo -e "\nalias tv='docker run --rm --gpus all -v \$(pwd):\$(pwd) -w \$(pwd) ttys0/other-transcode-nvidia --hevc --nvenc-temporal-aq'\n" >>/home/ubuntu/.bashrc
 
+# docker run --rm -v $(pwd):$(pwd) -w $(pwd) hub.skj.dev/img/other-transcode:sw-0.3.2 --x264-avbr --target=4000 src/*
+
 reboot

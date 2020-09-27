@@ -2,6 +2,10 @@ variable "nvenc_node_number" {
   default = 0
 }
 
+variable "sw_node_number" {
+  default = 0
+}
+
 
 data "aws_ami" "ubuntu" {
 
@@ -19,12 +23,12 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-resource "aws_launch_configuration" "nvenc" {
+resource "aws_launch_configuration" "sw" {
   image_id = data.aws_ami.ubuntu.id
-  instance_type = "g4dn.xlarge"
-  spot_price = "0.25"
+  instance_type = "c5a.8xlarge"
+  spot_price = "0.60"
 
-  iam_instance_profile = aws_iam_instance_profile.nvenc-role.name
+  iam_instance_profile = aws_iam_instance_profile.transcoding-role.name
   security_groups = [
     aws_security_group.allow-ssh.id
   ]
@@ -32,7 +36,42 @@ resource "aws_launch_configuration" "nvenc" {
   key_name = aws_key_pair.home.key_name
   associate_public_ip_address = true
 
-  user_data = file("transcode_setup.sh")
+  user_data = file("scripts/sw-setup.sh")
+
+  root_block_device {
+    volume_size = "100"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_group" "sw" {
+  max_size = 5
+  min_size = 0
+  desired_capacity = var.sw_node_number
+  availability_zones = ["us-east-1b","us-east-1c","us-east-1d"]
+
+  name = "sw"
+  launch_configuration = aws_launch_configuration.sw.name
+
+}
+
+resource "aws_launch_configuration" "nvenc" {
+  image_id = data.aws_ami.ubuntu.id
+  instance_type = "g4dn.xlarge"
+  spot_price = "0.25"
+
+  iam_instance_profile = aws_iam_instance_profile.transcoding-role.name
+  security_groups = [
+    aws_security_group.allow-ssh.id
+  ]
+
+  key_name = aws_key_pair.home.key_name
+  associate_public_ip_address = true
+
+  user_data = file("scripts/nvenc-setup.sh")
 
   root_block_device {
     volume_size = "20"
@@ -89,7 +128,8 @@ data "aws_iam_policy_document" "transcode-bucket" {
     ]
 
     resources = [
-      aws_s3_bucket.skj-archive.arn
+      aws_s3_bucket.skj-archive.arn,
+      aws_s3_bucket.skj-logs.arn
     ]
   }
 
@@ -105,12 +145,13 @@ data "aws_iam_policy_document" "transcode-bucket" {
     ]
 
     resources = [
-      "${aws_s3_bucket.skj-archive.arn}/transcode/*"
+      "${aws_s3_bucket.skj-archive.arn}/transcode/*",
+      "${aws_s3_bucket.skj-logs.arn}/transcode/*"
     ]
   }
 }
 
-data "aws_iam_policy_document" "nvenc-node" {
+data "aws_iam_policy_document" "transcoding-node" {
   statement {
     effect = "Allow"
 
@@ -126,27 +167,27 @@ data "aws_iam_policy_document" "nvenc-node" {
   }
 }
 
-resource "aws_iam_role" "nvenc-role" {
-  name = "nvenc_role"
+resource "aws_iam_role" "transcoding-role" {
+  name = "transcoding-role"
 
-  assume_role_policy = data.aws_iam_policy_document.nvenc-node.json
+  assume_role_policy = data.aws_iam_policy_document.transcoding-node.json
 }
 
-resource "aws_iam_role_policy_attachment" "nvenc-role" {
-  role = aws_iam_role.nvenc-role.name
-  policy_arn = aws_iam_policy.nvenc-policy.arn
+resource "aws_iam_role_policy_attachment" "transcoding-role" {
+  role = aws_iam_role.transcoding-role.name
+  policy_arn = aws_iam_policy.transcoding-policy.arn
 }
 
-resource "aws_iam_policy" "nvenc-policy" {
-  name = "nvenc-policy"
+resource "aws_iam_policy" "transcoding-policy" {
+  name = "transcoding-policy"
   description = "EC2 Access for NVENC instances"
 
   policy = data.aws_iam_policy_document.transcode-bucket.json
 }
 
-resource "aws_iam_instance_profile" "nvenc-role" {
-  name = "nvenc-role"
-  role = aws_iam_role.nvenc-role.name
+resource "aws_iam_instance_profile" "transcoding-role" {
+  name = "transcoding-role"
+  role = aws_iam_role.transcoding-role.name
 }
 
 

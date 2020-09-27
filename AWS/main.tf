@@ -8,9 +8,9 @@ terraform {
   }
 
   required_providers {
-    aws = "~> 3.4"
+    aws = "~> 3.8"
     dns = "~> 2.2"
-    vault = "~> 2.13"
+    vault = "~> 2.14"
     http = "~> 1.2.0"
   }
 }
