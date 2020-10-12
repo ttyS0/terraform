@@ -3,6 +3,9 @@
 apt-get -y update
 apt-get install -y docker.io awscli
 
+systemctl enable docker
+systemctl start docker
+
 # Add ubuntu user to docker group
 usermod -a -G docker ubuntu
 

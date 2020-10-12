@@ -7,7 +7,7 @@ variable "sw_node_number" {
 }
 
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "ubuntu-amd64" {
 
   most_recent = true
 
@@ -23,9 +23,25 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+data "aws_ami" "ubuntu-arm64" {
+
+  most_recent = true
+
+  owners = [
+    "099720109477"
+  ]
+
+  filter {
+    name = "name"
+    values = [
+      "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-arm64-server-*"
+    ]
+  }
+}
+
 resource "aws_launch_configuration" "sw" {
-  image_id = data.aws_ami.ubuntu.id
-  instance_type = "c5a.8xlarge"
+  image_id = data.aws_ami.ubuntu-arm64.id
+  instance_type = "c6g.8xlarge"
   spot_price = "0.60"
 
   iam_instance_profile = aws_iam_instance_profile.transcoding-role.name
@@ -51,7 +67,7 @@ resource "aws_autoscaling_group" "sw" {
   max_size = 5
   min_size = 0
   desired_capacity = var.sw_node_number
-  availability_zones = ["us-east-1b","us-east-1c","us-east-1d"]
+  availability_zones = ["us-east-1a","us-east-1b","us-east-1c","us-east-1d"]
 
   name = "sw"
   launch_configuration = aws_launch_configuration.sw.name
@@ -59,7 +75,7 @@ resource "aws_autoscaling_group" "sw" {
 }
 
 resource "aws_launch_configuration" "nvenc" {
-  image_id = data.aws_ami.ubuntu.id
+  image_id = data.aws_ami.ubuntu-amd64.id
   instance_type = "g4dn.xlarge"
   spot_price = "0.25"
 
@@ -89,8 +105,7 @@ resource "aws_autoscaling_group" "nvenc" {
 
   name = "nvenc"
   launch_configuration = aws_launch_configuration.nvenc.name
-  vpc_zone_identifier = [
-    aws_default_subnet.az1.id]
+  availability_zones = ["us-east-1a","us-east-1b","us-east-1c","us-east-1d"]
 
 }
 
